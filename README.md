@@ -1,5 +1,5 @@
 # Decryptoid
- Server-Side Web Programming Group Project with Arlan and Joshua
+ Server-Side Web Programming Group Project with Arlan Prado and Joshua Sjah
 
 Assignment:
 Your web application lets the users encrypt and decrypt texts in input (from an input box or a file). The user can select from a list of ciphers and specify if it needs encryption or decryption.
