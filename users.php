@@ -1,7 +1,8 @@
 <?php
 
 function userInput() {
-  require_once "login.php";
+    require_once "login.php";
+    session_start();
   
 	echo <<<_END
 		<html><head><title>Online Virus Checker</title></head><body>
@@ -36,7 +37,12 @@ _END;
 		$salt2 = $token[4];
 		$temp = hash('ripemd128', "$salt1$password$salt2");
 		if($temp == $token[2]) {
-			echo "test"; //redirect here
+			$_SESSION["username"] = $username;
+			$_SESSION["email"] = $token[1];
+			$_SESSION["password"] = $password;
+			$_SESSION["hashed"] = $temp;
+			echo $_SESSION["username"] . "<br>" . $_SESSION["email"] . "<br>" . $_SESSION["password"] . "<br>" . $_SESSION["hashed"]; 
+			//redirect here
 		}
 		$result->close();
 		mysqli_close($conn);
