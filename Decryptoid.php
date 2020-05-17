@@ -48,14 +48,11 @@ function cipherView($cipher){
 
 function startUp(){
     session_start();
-    $username = sanitizeMySQL($_SESSION['username']);  //this will be entered in the database once the user inputs text to decrypt or encrypt
-    $ip_address = sanitizeMySQL($_SESSION['ip']);
-    $rem_address = sanitizeMySQL($_SERVER['REMOTE_ADDR']);
-
-    if($ip_address != $rem_address){
-        //place signout function here
+    if((sanitizeMySQL($_SESSION['ip']) != sanitizeMySQL($_SERVER['REMOTE_ADDR'])) || !isset($_SESSION['username'])){
         signOut();
     }
+    $username = sanitizeMySQL($_SESSION['username']);  //this will be entered in the database once the user inputs text to decrypt or encrypt
+
 }    
 function signOut(){
  //   session_unset();    //clear session information
