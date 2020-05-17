@@ -57,6 +57,7 @@ _END;
 		$stmt->execute();
 		printf("%d Row inserted.\n", $stmt->affected_rows);
 		$stmt->close();
+		$result->close();
 		echo "Successfully signed up.";
     }
     mysqli_close($conn); //close the connection if nothing is accomplished
