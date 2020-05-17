@@ -1,5 +1,5 @@
 <?php
-
+/*
 session_start();
 $username = sanitizeMySQL($_SESSION['username']);  //this will be entered in the database once the user inputs text to decrypt or encrypt
 $ip_address = sanitizeMySQL($_SESSION['ip']);
@@ -9,7 +9,7 @@ if($ip_address != $rem_address){
     //place signout function here
     signOut();
 }
-
+*/
 require_once 'login.php';
 $conn = new mysqli($hn, $un, $pw, $db);
 if($conn->connect_error) die("Unable To Login"); //maybe change this to have a function instead
@@ -63,19 +63,4 @@ function signOut(){
 
     echo "Logged Out";
 }
-function clean_strings($dirtyString){
-    $cleanString = stripslashes($dirtyString);
-    $cleanString = strip_tags($cleanString);
-    $cleanString = htmlentities($cleanString);
-    
-    return $cleanString;
-}
-//returns the sanitized mysql string
-function sanitizeMySQL($conn, $var){
-    $var = $conn->real_escape_string($var);
-    $var = clean_strings($var);
-    return $var;
-}
-
-
 ?>
