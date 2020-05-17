@@ -1,15 +1,6 @@
 <?php
-/*
-session_start();
-$username = sanitizeMySQL($_SESSION['username']);  //this will be entered in the database once the user inputs text to decrypt or encrypt
-$ip_address = sanitizeMySQL($_SESSION['ip']);
-$rem_address = sanitizeMySQL($_SERVER['REMOTE_ADDR']);
-
-if($ip_address != $rem_address){
- //   session_unset();    //clear session information
- //   header("Location: login.php");   //whatever login file name
-}
-*/
+require_once 'Decryptoid.php';
+//startUp();
 require_once 'login.php';
 $conn = new mysqli($hn, $un, $pw, $db);
 if($conn->connect_error) die("Unable To Login"); //maybe change this to have a function instead
@@ -19,15 +10,11 @@ $cipherSimSub = <<<HTML
         <body>
         <b>Simple Substitution</b>
         <br></br>
-        <form method="post" action="simplesubstitution.php">
-        <input type="submit" value="Log Out" name="btSignOut"></form>
-        <form method="post" action="simplesubstitution.php">
-        <input type="submit" value="Home" name="btHome"></form>
-        <br>
-        <form method="post" action="simplesubstitution.php" enctype="multipart/form=data">
+        
+        <form method="post" action="simplesubstitution.php" enctype="multipart/form-data">
         
         <label for="key">Key:</label>
-        <input type="text" id="key" name"key"><br></br>
+        <input type="text" id="key" name="key"><br></br>
         
         <label for="textIn">Text Input:</label>
         <input type="text" id="textIn" name="textIn">
@@ -36,7 +23,7 @@ $cipherSimSub = <<<HTML
         
         <label for="fileIn">File Input:</label>
         <input type="file" id="fileIn" name="fileIn">
-        <input type="submit" value="Submit" name="btFile">
+        <input type="submit" value="Upload" name="btFile">
         <br></br>
              
         </form>
@@ -50,25 +37,24 @@ if(isset($_POST["btSignOut"])){
 if(isset($_POST["btHome"])){
     header("Location:Decryptoid.php");
 }
-function signOut(){
- //   session_unset();    //clear session information
- //   header("Location: login.php");   //whatever login file name
-
-    echo "Logged Out";
+if(isset($_POST["btText"])){
+    if(isset($_POST["key"]) && isset($_POST["textIn"])){
+        
+    }else{
+        echo "No Key or Text Present";
+    }
 }
-
-function clean_strings($dirtyString){
-    $cleanString = stripslashes($dirtyString);
-    $cleanString = strip_tags($cleanString);
-    $cleanString = htmlentities($cleanString);
-    
-    return $cleanString;
-}
-//returns the sanitized mysql string
-function sanitizeMySQL($conn, $var){
-    $var = $conn->real_escape_string($var);
-    $var = clean_strings($var);
-    return $var;
+if(isset($_POST["btFile"])){
+    if(isset($_POST["key"]) && $_FILES["fileIn"]["size"] > 0){               
+	if($_FILES["fileIn"]["type"] == "text/plain") {
+            $text = sanitizeMySQL($conn, file_get_contents($_FILES["fileIn"]["tmp_name"]));
+            echo $text;
+        }else{
+            echo "This file is not allowed";
+        }
+    }else{
+        echo "No Key or File Present";
+    }
 }
 
 ?>

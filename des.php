@@ -1,15 +1,6 @@
 <?php
-/*
-session_start();
-$username = sanitizeMySQL($_SESSION['username']);  //this will be entered in the database once the user inputs text to decrypt or encrypt
-$ip_address = sanitizeMySQL($_SESSION['ip']);
-$rem_address = sanitizeMySQL($_SERVER['REMOTE_ADDR']);
-
-if($ip_address != $rem_address){
- //   session_unset();    //clear session information
- //   header("Location: login.php");   //whatever login file name
-}
-*/
+require_once 'Decryptoid.php';
+//startUp();
 require_once 'login.php';
 $conn = new mysqli($hn, $un, $pw, $db);
 if($conn->connect_error) die("Unable To Login"); //maybe change this to have a function instead
@@ -19,12 +10,7 @@ $cipherDES = <<<HTML
         <body>
         <b>DES</b>
         <br></br>
-        <form method="post" action="des.php">
-        <input type="submit" value="Log Out" name="btSignOut"></form>
-        <form method="post" action="simplesubstitution.php">
-        <input type="submit" value="Home" name="btHome"></form>
-        <br>
-        <form method="post" action="des.php" enctype="multipart/form=data">
+        <form method="post" action="des.php" enctype="multipart/form-data">
         <label for="textIn">Text Input:</label>
         <input type="text" id="textIn" name="textIn">
         <input type="submit" value="Submit" name="btText">
@@ -34,8 +20,6 @@ $cipherDES = <<<HTML
         <input type="file" id="fileIn" name="fileIn">
         <input type="submit" value="Submit" name="btFile">
         <br></br>
-        
-        <input type="text" id="key" name"key">
         </form>
         </body>
         </html>
@@ -49,25 +33,23 @@ if(isset($_POST["btSignOut"])){
 if(isset($_POST["btHome"])){
     header("Location:Decryptoid.php");
 }
-function signOut(){
- //   session_unset();    //clear session information
- //   header("Location: login.php");   //whatever login file name
-
-    echo "Logged Out";
+if(isset($_POST["btText"])){
+    if(isset($_POST["textIn"])){
+        
+    }else{
+        echo "No Text Present";
+    }
 }
-
-function clean_strings($dirtyString){
-    $cleanString = stripslashes($dirtyString);
-    $cleanString = strip_tags($cleanString);
-    $cleanString = htmlentities($cleanString);
-    
-    return $cleanString;
+if(isset($_POST["btFile"])){
+    if($_FILES["fileIn"]["size"] > 0){               
+	if($_FILES["fileIn"]["type"] == "text/plain") {
+            $text = sanitizeMySQL(file_get_contents($conn, $_FILES["fileIn"]["tmp_name"]));
+            echo $text;
+        }else{
+            echo "This file is not allowed";
+        }
+    }else{
+        echo "No File Present";
+    }
 }
-//returns the sanitized mysql string
-function sanitizeMySQL($conn, $var){
-    $var = $conn->real_escape_string($var);
-    $var = clean_strings($var);
-    return $var;
-}
-
 ?>
