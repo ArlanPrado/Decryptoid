@@ -1,0 +1,140 @@
+
+Setting environment for using XAMPP for Windows.
+arlan@DESKTOP-88FR90J c:\xampp
+# cd mysql
+
+arlan@DESKTOP-88FR90J c:\xampp\mysql
+# cd bin
+
+arlan@DESKTOP-88FR90J c:\xampp\mysql\bin
+# mysql -u root -p -h 127.0.0.1
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 8
+Server version: 10.4.11-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| malware_scan       |
+| mysql              |
+| performance_schema |
+| phpmyadmin         |
+| school_information |
+| user_content       |
+| video_project      |
++--------------------+
+8 rows in set (0.006 sec)
+
+MariaDB [(none)]> CREATE DATABASE decryptoid;
+Query OK, 1 row affected (0.002 sec)
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| decryptoid         |
+| information_schema |
+| malware_scan       |
+| mysql              |
+| performance_schema |
+| phpmyadmin         |
+| school_information |
+| user_content       |
+| video_project      |
++--------------------+
+9 rows in set (0.001 sec)
+
+MariaDB [(none)]> use decryptoid;
+Database changed
+MariaDB [decryptoid]> show tables;
+Empty set (0.001 sec)
+
+MariaDB [decryptoid]> CREATE TABLE user_info(
+    -> email VARCHAR(128) NOT NULL,
+    -> username VARCHAR(32) NOT NULL,
+    -> passhash CHAR;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 4
+MariaDB [decryptoid]> CREATE TABLE user_ciphers(
+    -> username VARCHAR(32) NOT NULL,
+    -> input TEXT NOT NULL,
+    -> cipher VARCHAR(64) NOT NULL,
+    -> timestamp TIMESTAMP NOT NULL);
+Query OK, 0 rows affected (0.023 sec)
+
+MariaDB [decryptoid]> DESCRIBE user_ciphers;
++-----------+-------------+------+-----+---------------------+-------------------------------+
+| Field     | Type        | Null | Key | Default             | Extra                         |
++-----------+-------------+------+-----+---------------------+-------------------------------+
+| username  | varchar(32) | NO   |     | NULL                |                               |
+| input     | text        | NO   |     | NULL                |                               |
+| cipher    | varchar(64) | NO   |     | NULL                |                               |
+| timestamp | timestamp   | NO   |     | current_timestamp() | on update current_timestamp() |
++-----------+-------------+------+-----+---------------------+-------------------------------+
+4 rows in set (0.013 sec)
+
+MariaDB [decryptoid]> show users;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'users' at line 1
+MariaDB [decryptoid]> CREATE USER 'decryptoid_php'@'localhost' IDENTIFIED BY 'fXeGD76V';
+Query OK, 0 rows affected (0.010 sec)
+
+MariaDB [decryptoid]> GRANT ALL PRIVILEGES ON decryptoid.* TO 'decryptoid'@'localhost';
+Query OK, 0 rows affected (0.004 sec)
+
+MariaDB [decryptoid]> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.001 sec)
+
+MariaDB [decryptoid]> quit;
+Bye
+
+arlan@DESKTOP-88FR90J c:\xampp\mysql\bin
+# mysql -u root -p -h 127.0.0.1
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 9
+Server version: 10.4.11-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> use decryptoid
+Database changed
+MariaDB [decryptoid]> DELETE TABLE user_ciphers;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'TABLE user_ciphers' at line 1
+MariaDB [decryptoid]> DROP TABLE user_ciphers;
+Query OK, 0 rows affected (0.050 sec)
+
+MariaDB [decryptoid]> CREATE TABLE user_ciphers(
+    -> username VARCHAR(32) NOT NULL,
+    -> input TEXT NOT NULL,
+    -> cipher VARCHAR(64) NOT NULL,
+    -> timestamp TIMESTAMP NOT NULL,
+    -> key1 varchar(128),
+    -> key2 varchar(128));
+Query OK, 0 rows affected (0.016 sec)
+
+MariaDB [decryptoid]> DESCRIBE user_ciphers;
++-----------+--------------+------+-----+---------------------+-------------------------------+
+| Field     | Type         | Null | Key | Default             | Extra                         |
++-----------+--------------+------+-----+---------------------+-------------------------------+
+| username  | varchar(32)  | NO   |     | NULL                |                               |
+| input     | text         | NO   |     | NULL                |                               |
+| cipher    | varchar(64)  | NO   |     | NULL                |                               |
+| timestamp | timestamp    | NO   |     | current_timestamp() | on update current_timestamp() |
+| key1      | varchar(128) | YES  |     | NULL                |                               |
+| key2      | varchar(128) | YES  |     | NULL                |                               |
++-----------+--------------+------+-----+---------------------+-------------------------------+
+6 rows in set (0.008 sec)
+
+MariaDB [decryptoid]> quit;
+Bye
+
+arlan@DESKTOP-88FR90J c:\xampp\mysql\bin
+#
