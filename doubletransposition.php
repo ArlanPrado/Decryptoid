@@ -54,6 +54,7 @@ if(isset($_POST["btText"])){
         echo "<b>Encyrption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
         echo "<br>";
         echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
+        uploadDT($t, $k1, $k2);
     }else{
         echo "No Keys or Text Present";
     }
@@ -61,8 +62,17 @@ if(isset($_POST["btText"])){
 if(isset($_POST["btFile"])){
     if(isset($_POST["key1"]) && isset($_POST["key2"])  && $_FILES["fileIn"]["size"] > 0){               
 	if($_FILES["fileIn"]["type"] == "text/plain") {
+            $k1 = strtoupper(sanitizeMySQL($conn, $_POST["key1"]));
+            $k2 = strtoupper(sanitizeMySQL($conn, $_POST["key2"]));
             $text = sanitizeMySQL($conn, file_get_contents($conn, $_FILES["fileIn"]["tmp_name"]));
-            echo $text;
+            echo "<b>Key 1</b>: " . $k1 . "<b> Key 2</b>: " . $k2;
+            echo "<br>";
+            echo "<b>Original Text</b>: [" . $t . "]";
+            echo "<br>";
+            echo "<b>Encyrption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
+            echo "<br>";
+            echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
+            uploadDT($t, $k1, $k2);
         }else{
             echo "This file is not allowed";
         }
@@ -152,5 +162,13 @@ function orderKey($alphabet, $key1) {
     }
     return $key1Arr;
 }
-
+function uploadDT($t, $key1, $key2){
+    $result = $conn->query("SELECT * FROM user_ciphers");
+        
+    if(!$result) die("Cannot connect to database");
+    $date = new DateTime();
+    $username = $_SESSION["username"];
+    $query = "INSERT INTO user_ciphers VALUES($username, $t, 'Double Transposition',$date->getTimestamp(), key1, key2)";    //username, text, cipher, timestamp->do not put?, key
+    $result = $conn->query($query);
+}
 ?>
