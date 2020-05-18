@@ -41,11 +41,13 @@ if(isset($_POST["btText"])){
     if(isset($_POST["key"]) && isset($_POST["textIn"])){
         $k1 = sanitizeMySQL($conn, $_POST["key"]);
         $t = sanitizeMySQL($conn, $_POST["textIn"]);
-        echo "<b>Key 1</b>: " . $k1 . " ";
+        echo "<b>Key</b>: " . $k1 . " ";
         echo "<br>";
         echo "<b>Original Text</b>: [" . $t . "]";
         echo "<br>";
         echo "<b>Encryption/Decryption</b>: [" . rc4($t, $k1) . "]";
+        upload($t, "RC4", $k1);
+        
     }else{
         echo "No Key or Text Present";
     }
@@ -55,11 +57,12 @@ if(isset($_POST["btFile"])){
 	if($_FILES["fileIn"]["type"] == "text/plain") {
             $k1 = sanitizeMySQL($conn, $_POST["key"]);
             $text = sanitizeMySQL($conn, file_get_contents($_FILES["fileIn"]["tmp_name"]));
-            echo "<b>Key 1</b>: " . $k1 . " ";
+            echo "<b>Key</b>: " . $k1 . " ";
             echo "<br>";
             echo "<b>Original Text</b>: [" . $text . "]";
             echo "<br>";
             echo "<b>Encryption/Decryption</b>: [" . rc4($text, $k1) . "]";
+            upload($text, "RC4", $k1);
         }else{
             echo "This file is not allowed";
         }

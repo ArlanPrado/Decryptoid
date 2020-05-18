@@ -1,4 +1,5 @@
 <?php
+//@author Arlan Prado and Joshua Sjah
 require_once 'login.php';
 startUp();
 $conn = new mysqli($hn, $un, $pw, $db);
@@ -72,5 +73,14 @@ function sanitizeMySQL($conn, $var){
     $var = $conn->real_escape_string($var);
     $var = clean_strings($var);
     return $var;
+}
+function upload($text, $cipher, $key){
+    $result = $conn->query("SELECT * FROM user_ciphers");
+        
+    if(!$result) die("Cannot connect to database");
+    $date = new DateTime();
+    $username = $_SESSION["username"];
+    $query = "INSERT INTO user_ciphers VALUES($username, $text, $cipher, $date->getTimestamp(), $key)";    //username, text, cipher, timestamp->do not put?, key
+    $result = $conn->query($query);
 }
 ?>

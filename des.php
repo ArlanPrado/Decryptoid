@@ -11,6 +11,10 @@ $cipherDES = <<<HTML
         <b>DES</b>
         <br></br>
         <form method="post" action="des.php" enctype="multipart/form-data">
+        
+        <label for="key">Key:</label>
+        <input type="text" id="key" name="key"><br></br>
+        
         <label for="textIn">Text Input:</label>
         <input type="text" id="textIn" name="textIn">
         <input type="submit" value="Submit" name="btText">
@@ -34,22 +38,36 @@ if(isset($_POST["btHome"])){
     header("Location:Decryptoid.php");
 }
 if(isset($_POST["btText"])){
-    if(isset($_POST["textIn"])){
-        
+    if(isset($_POST["key"]) && isset($_POST["textIn"])){
+        $k1 = sanitizeMySQL($conn, $_POST["key"]);
+        $t = sanitizeMySQL($conn, $_POST["textIn"]);
+        echo "<b>Key</b>: " . $k1 . " ";
+        echo "<br>";
+        echo "<b>Original Text</b>: [" . $t . "]";
+        echo "<br>";
+        echo "<b>Encryption/Decryption</b>: [" . des($t, $k1) . "]";
     }else{
-        echo "No Text Present";
+        echo "No Key or Text Present";
     }
 }
 if(isset($_POST["btFile"])){
-    if($_FILES["fileIn"]["size"] > 0){               
+    if(isset($_POST["key"]) && $_FILES["fileIn"]["size"] > 0){               
 	if($_FILES["fileIn"]["type"] == "text/plain") {
-            $text = sanitizeMySQL(file_get_contents($conn, $_FILES["fileIn"]["tmp_name"]));
-            echo $text;
+            $k1 = sanitizeMySQL($conn, $_POST["key"]);
+            $text = sanitizeMySQL($conn, file_get_contents($_FILES["fileIn"]["tmp_name"]));
+            echo "<b>Key</b>: " . $k1 . " ";
+            echo "<br>";
+            echo "<b>Original Text</b>: [" . $text . "]";
+            echo "<br>";
+            echo "<b>Encryption/Decryption</b>: [" . des($text, $k1) . "]";
         }else{
             echo "This file is not allowed";
         }
     }else{
-        echo "No File Present";
+        echo "No Key or File Present";
     }
+}
+function des($text, $key){
+    
 }
 ?>

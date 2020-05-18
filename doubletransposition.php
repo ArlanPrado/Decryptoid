@@ -51,7 +51,7 @@ if(isset($_POST["btText"])){
         echo "<br>";
         echo "<b>Original Text</b>: [" . $t . "]";
         echo "<br>";
-        echo "<b>Encyrption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
+        echo "<b>Encyption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
         echo "<br>";
         echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
     }else{
@@ -123,7 +123,7 @@ function tEncrypt($text, $key1, $alphabet){
     return $text1;
 }
 function tDecrypt($text, $key1, $alphabet){
-    $key1TwoDim = 
+    //$key1TwoDim = 
     
     /*
     $key1Arr = array();
@@ -169,4 +169,13 @@ function tDecrypt($text, $key1, $alphabet){
     */
 }
 
+function uploadDT($t, $key1, $key2){
+    $result = $conn->query("SELECT * FROM user_ciphers");
+        
+    if(!$result) die("Cannot connect to database");
+    $date = new DateTime();
+    $username = $_SESSION["username"];
+    $query = "INSERT INTO user_ciphers VALUES($username, $t, 'Double Transposition',$date->getTimestamp(), key1, key2)";    //username, text, cipher, timestamp->do not put?, key
+    $result = $conn->query($query);
+}
 ?>
