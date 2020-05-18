@@ -54,7 +54,6 @@ if(isset($_POST["btText"])){
         echo "<b>Encyrption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
         echo "<br>";
         echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
-        uploadDT($t, $k1, $k2);
     }else{
         echo "No Keys or Text Present";
     }
@@ -62,17 +61,8 @@ if(isset($_POST["btText"])){
 if(isset($_POST["btFile"])){
     if(isset($_POST["key1"]) && isset($_POST["key2"])  && $_FILES["fileIn"]["size"] > 0){               
 	if($_FILES["fileIn"]["type"] == "text/plain") {
-            $k1 = strtoupper(sanitizeMySQL($conn, $_POST["key1"]));
-            $k2 = strtoupper(sanitizeMySQL($conn, $_POST["key2"]));
             $text = sanitizeMySQL($conn, file_get_contents($conn, $_FILES["fileIn"]["tmp_name"]));
-            echo "<b>Key 1</b>: " . $k1 . "<b> Key 2</b>: " . $k2;
-            echo "<br>";
-            echo "<b>Original Text</b>: [" . $t . "]";
-            echo "<br>";
-            echo "<b>Encyrption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
-            echo "<br>";
-            echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
-            uploadDT($t, $k1, $k2);
+            echo $text;
         }else{
             echo "This file is not allowed";
         }
@@ -89,8 +79,8 @@ function dTEncrypt($text, $key1, $key2, $alphabet){
 }
 function dTDecrypt($text, $key1, $key2, $alphabet){
     $text1 = tDecrypt($text, $key2, $alphabet);
-    //$text2 = tDecrypt($text1, $key1, $alphabet);
-    return $text1;
+    $text2 = tDecrypt($text1, $key1, $alphabet);
+    return $text2;
 }
 function tEncrypt($text, $key1, $alphabet){
     $key1Arr = orderKey($alphabet, $key1);
@@ -131,9 +121,11 @@ function tDecrypt($text, $key1, $alphabet){
     $text = str_replace(" ", "", $text);
     $mincolumns = floor(strlen($text) / strlen($key1));
     $remainder = strlen($text) % strlen($key1);
+    $temp_key = $key1;
     
     for($i=1; $i<=sizeof($key1Arr); $i++) {
-		$temp = strpos($key1, $key1Arr[$i]) + 1;
+		$temp = strpos($temp_key, $key1Arr[$i]) + 1;
+		$temp_key[$temp-1] = "!";
 		if($temp <= $remainder) {
 			$finalTable[$temp] = substr($text, 0, $mincolumns+1); //arrange the cipher
 			$text = substr($text, $mincolumns+1); 
@@ -143,8 +135,14 @@ function tDecrypt($text, $key1, $alphabet){
 			$text = substr($text, $mincolumns); 
 		}
 	}
-	for($i=1; $i<=strlen($key1); $i++) {
-		for($j=0; $j<strlen($key1); $i++)
+	
+	for($i=0; $i<strlen($finalTable[1]); $i++) {
+		for($j=1; $j<=strlen($key1); $j++) {
+			if($i >= strlen($finalTable[$j])) {
+				continue;
+			}
+			$finalDecrypted .= $finalTable[$j][$i];
+		}
 	}
 	return $finalDecrypted;
 }
@@ -162,13 +160,5 @@ function orderKey($alphabet, $key1) {
     }
     return $key1Arr;
 }
-function uploadDT($t, $key1, $key2){
-    $result = $conn->query("SELECT * FROM user_ciphers");
-        
-    if(!$result) die("Cannot connect to database");
-    $date = new DateTime();
-    $username = $_SESSION["username"];
-    $query = "INSERT INTO user_ciphers VALUES($username, $t, 'Double Transposition',$date->getTimestamp(), key1, key2)";    //username, text, cipher, timestamp->do not put?, key
-    $result = $conn->query($query);
-}
+
 ?>
