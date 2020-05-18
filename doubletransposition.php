@@ -20,12 +20,14 @@ $cipherDubTranspo = <<<HTML
         
         <label for="textIn">Text Input:</label>
         <input type="text" id="textIn" name="textIn">
-        <input type="submit" value="Submit" name="btText">
+        <input type="submit" value="Encryption" name="btText">
+        <input type="submit" value="Decryption" name="btTextDec">
         <br></br>
         
         <label for="fileIn">File Input:</label>
         <input type="file" id="fileIn" name="fileIn">
-        <input type="submit" value="Submit" name="btFile">
+        <input type="submit" value="Encryption" name="btFile">
+        <input type="submit" value="Decryption" name="btFileDec">
         <br></br>
         </form>
         </body>
@@ -51,13 +53,27 @@ if(isset($_POST["btText"])){
         echo "<br>";
         echo "<b>Original Text</b>: [" . $t . "]";
         echo "<br>";
-        echo "<b>Encyrption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
+        echo "<b>Encryption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
+    }else{
+        echo "No Keys or Text Present";
+    }
+}
+
+if(isset($_POST["btTextDec"])){
+    if(isset($_POST["key1"]) && isset($_POST["key2"]) && isset($_POST["textIn"])){
+        $k1 = strtoupper(sanitizeMySQL($conn, $_POST["key1"]));
+        $k2 = strtoupper(sanitizeMySQL($conn, $_POST["key2"]));
+        $t = sanitizeMySQL($conn, $_POST["textIn"]);
+        echo "<b>Key 1</b>: " . $k1 . "<b> Key 2</b>: " . $k2;
+        echo "<br>";
+        echo "<b>Original Text</b>: [" . $t . "]";
         echo "<br>";
         echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
     }else{
         echo "No Keys or Text Present";
     }
 }
+
 if(isset($_POST["btFile"])){
     if(isset($_POST["key1"]) && isset($_POST["key2"])  && $_FILES["fileIn"]["size"] > 0){               
 	if($_FILES["fileIn"]["type"] == "text/plain") {
@@ -71,6 +87,18 @@ if(isset($_POST["btFile"])){
     }
 }
 
+if(isset($_POST["btFileDec"])){
+    if(isset($_POST["key1"]) && isset($_POST["key2"])  && $_FILES["fileIn"]["size"] > 0){               
+	if($_FILES["fileIn"]["type"] == "text/plain") {
+            $text = sanitizeMySQL($conn, file_get_contents($conn, $_FILES["fileIn"]["tmp_name"]));
+            echo $text;
+        }else{
+            echo "This file is not allowed";
+        }
+    }else{
+        echo "No Keys or File Present";
+    }
+}
 
 function dTEncrypt($text, $key1, $key2, $alphabet){
     $text1 = tEncrypt($text, $key1, $alphabet);
@@ -115,17 +143,17 @@ function tEncrypt($text, $key1, $alphabet){
     return $text1;
 }
 function tDecrypt($text, $key1, $alphabet){
-    $key1Arr = orderKey($alphabet, $key1);
-    $finalDecrypted = "";
+    $key1Arr = orderKey($alphabet, $key1); 
+    $finalDecrypted = ""; 
     $finalTable = array();
     $text = str_replace(" ", "", $text);
-    $mincolumns = floor(strlen($text) / strlen($key1));
-    $remainder = strlen($text) % strlen($key1);
-    $temp_key = $key1;
+    $mincolumns = floor(strlen($text) / strlen($key1)); //is the minimum amount of columns in the table
+    $remainder = strlen($text) % strlen($key1); //how many rows are in the table
+    $temp_key = $key1; //will be used to handle duplicates
     
     for($i=1; $i<=sizeof($key1Arr); $i++) {
 		$temp = strpos($temp_key, $key1Arr[$i]) + 1;
-		$temp_key[$temp-1] = "!";
+		$temp_key[$temp-1] = "!"; //replace current letter so duplicates can be handled
 		if($temp <= $remainder) {
 			$finalTable[$temp] = substr($text, 0, $mincolumns+1); //arrange the cipher
 			$text = substr($text, $mincolumns+1); 
@@ -136,10 +164,10 @@ function tDecrypt($text, $key1, $alphabet){
 		}
 	}
 	
-	for($i=0; $i<strlen($finalTable[1]); $i++) {
-		for($j=1; $j<=strlen($key1); $j++) {
-			if($i >= strlen($finalTable[$j])) {
-				continue;
+	for($i=0; $i<strlen($finalTable[1]); $i++) { //goes down the letters of the column
+		for($j=1; $j<=strlen($key1); $j++) { //goes across the letters in the rows
+			if($i >= strlen($finalTable[$j])) { //handles the different sizes of columns
+				continue; //skip over to avoid errors
 			}
 			$finalDecrypted .= $finalTable[$j][$i];
 		}
@@ -150,7 +178,7 @@ function tDecrypt($text, $key1, $alphabet){
 function orderKey($alphabet, $key1) {
 	$key1Arr = array();
 	$keyInd = 1;
-	for($j = 0; $j < strlen($alphabet); $j++){      //get the number for each letter in the key1
+	for($j = 0; $j < strlen($alphabet); $j++){      //get the number for each letter in the key
         for($i = 0; $i < strlen($key1); $i++){
             if($alphabet[$j] == $key1[$i]){
                 $key1Arr[$keyInd] = $alphabet[$j];
