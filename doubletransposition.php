@@ -30,7 +30,7 @@ $cipherDubTranspo = <<<HTML
         </form>
         </body>
         </html>
-        HTML;
+HTML;
 echo $cipherDubTranspo;
 
 $alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -51,7 +51,7 @@ if(isset($_POST["btText"])){
         echo "<br>";
         echo "<b>Original Text</b>: [" . $t . "]";
         echo "<br>";
-        echo "<b>Encyption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
+        echo "<b>Encyrption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
         echo "<br>";
         echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
     }else{
@@ -79,24 +79,14 @@ function dTEncrypt($text, $key1, $key2, $alphabet){
 }
 function dTDecrypt($text, $key1, $key2, $alphabet){
     $text1 = tDecrypt($text, $key2, $alphabet);
-    $text2 = tDecrypt($text1, $key1, $alphabet);
-    return $text2;
+    //$text2 = tDecrypt($text1, $key1, $alphabet);
+    return $text1;
 }
 function tEncrypt($text, $key1, $alphabet){
-    $key1Arr = array();
-    $keyInd = 1;
-    for($j = 0; $j < strlen($alphabet); $j++){      //get the number for each letter in the key1
-        for($i = 0; $i < strlen($key1); $i++){
-            if($alphabet[$j] == $key1[$i]){
-                $key1Arr[$keyInd] = $alphabet[$j];
-                $keyInd++;
-            }
-        }
-    }
-    //echo var_dump($key1Arr);
-   // echo "<br>";
+    $key1Arr = orderKey($alphabet, $key1);
     $key1wTextArr = array();
-    //strlen($text)
+    $keyInd = 1;
+    $text = str_replace(" ", "", $text);
     for($i = 0; $i < strlen($text); $i++){      //arrange the text letters in columns
         if($keyInd > strlen($key1)){
             $keyInd = 1;
@@ -120,15 +110,39 @@ function tEncrypt($text, $key1, $alphabet){
         $text1 = $text1 . $key1wTextArr[$strPos];
         $keyChar2 = $keyChar;        
     }
+    $split = floor(strlen($text) / strlen($key1)); //determines how many characters should be grouped
+    $text1 = wordwrap($text1, $split, " ", true); //put a space every group of indexes that is determined by split
     return $text1;
 }
 function tDecrypt($text, $key1, $alphabet){
-    //$key1TwoDim = 
+    $key1Arr = orderKey($alphabet, $key1);
+    $finalDecrypted = "";
+    $finalTable = array();
+    $text = str_replace(" ", "", $text);
+    $mincolumns = floor(strlen($text) / strlen($key1));
+    $remainder = strlen($text) % strlen($key1);
     
-    /*
-    $key1Arr = array();
-    $keyInd = 1;
-    for($j = 0; $j < strlen($alphabet); $j++){      //get the number for each letter in the key1
+    for($i=1; $i<=sizeof($key1Arr); $i++) {
+		$temp = strpos($key1, $key1Arr[$i]) + 1;
+		if($temp <= $remainder) {
+			$finalTable[$temp] = substr($text, 0, $mincolumns+1); //arrange the cipher
+			$text = substr($text, $mincolumns+1); 
+		}
+		else {
+			$finalTable[$temp] = substr($text, 0, $mincolumns); //arrange the cipher 
+			$text = substr($text, $mincolumns); 
+		}
+	}
+	for($i=1; $i<=strlen($key1); $i++) {
+		for($j=0; $j<strlen($key1); $i++)
+	}
+	return $finalDecrypted;
+}
+
+function orderKey($alphabet, $key1) {
+	$key1Arr = array();
+	$keyInd = 1;
+	for($j = 0; $j < strlen($alphabet); $j++){      //get the number for each letter in the key1
         for($i = 0; $i < strlen($key1); $i++){
             if($alphabet[$j] == $key1[$i]){
                 $key1Arr[$keyInd] = $alphabet[$j];
@@ -136,46 +150,7 @@ function tDecrypt($text, $key1, $alphabet){
             }
         }
     }
-
-    echo "<br>";
-    echo var_dump($key1Arr);
-    $textNum = strlen($text);
-    $key1Num = strlen($key1);
-    $rows = (int)($textNum / $key1Num);
-    if($textNum % $key1Num > 0){
-        $rows = $rows + 1;
-    }
-    $placeholderNum = ($rows * $key1Num) - $textNum;
-    //echo $rows;
-    $textArr = array();
-    $j = 0;
-    for($i = 0; $i < strlen($key1); $i++){          //organize the substrings into columns
-        $textArr[$i+1] = substr($text, $j, $rows);
-        $j += $rows;
-        echo $textArr[$i+1];
-    }
-    echo "<br>";
-    echo var_dump($textArr);
-    //arrange the columns into the key's order
-    $text1 = array();
-    $keyChar2 = NULL;
-    //key1 is TESTING
-    for($i = 1; $i < strlen($key1)+1; $i++){        //order the columns based on alphabetical priority
-        //$priori = array_search($key1Arr[$i], $key1); //get T's priority
-       // $substring = $textArr[$priori];  //get the index at the same priority as T
-        //$text1[$i] = $substring;//place the column into the array[$i]
-        
-    }
-    */
+    return $key1Arr;
 }
 
-function uploadDT($t, $key1, $key2){
-    $result = $conn->query("SELECT * FROM user_ciphers");
-        
-    if(!$result) die("Cannot connect to database");
-    $date = new DateTime();
-    $username = $_SESSION["username"];
-    $query = "INSERT INTO user_ciphers VALUES($username, $t, 'Double Transposition',$date->getTimestamp(), key1, key2)";    //username, text, cipher, timestamp->do not put?, key
-    $result = $conn->query($query);
-}
 ?>

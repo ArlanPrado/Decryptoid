@@ -39,16 +39,10 @@ if(isset($_POST["btHome"])){
 }
 if(isset($_POST["btText"])){
     if(isset($_POST["key"]) && isset($_POST["textIn"])){
-	$text = sanitizeMySQL($conn,$_POST["textIn"]);
-	$key = sanitizeMySQL($conn,$_POST["key"]);
-        echo "<b>Key</b>: " . $key . " ";
-        echo "<br>";
-        echo "<b>Original Text</b>: [" . $text . "]";
-        echo "<br>";
-        echo "<b>Encryption</b>: [" . simpleCipherCrypt($text, $key) . "]";
-        echo "<br>";
-        echo "<b>Decryption</b>: [" . simpleCipherDecrypt($text, $key) . "]";
-        upload($text, "Simple Substitution", $key);
+		$text = $conn->real_escape_string($_POST["textIn"]);
+		$key = $conn->real_escape_string($_POST["key"]);
+        echo simpleCipherCrypt($text, $key) . "<br>";
+        echo simpleCipherDecrypt($text, $key);
     }else{
         echo "No Key or Text Present";
     }
@@ -57,15 +51,7 @@ if(isset($_POST["btFile"])){
     if(isset($_POST["key"]) && $_FILES["fileIn"]["size"] > 0){               
 	if($_FILES["fileIn"]["type"] == "text/plain") {
             $text = sanitizeMySQL($conn, file_get_contents($_FILES["fileIn"]["tmp_name"]));
-            $key = sanitizeMySQL($conn, $_POST["key"]);
-            echo "<b>Key</b>: " . $key . " ";
-            echo "<br>";
-            echo "<b>Original Text</b>: [" . $text . "]";
-            echo "<br>";
-            echo "<b>Encryption</b>: [" . simpleCipherCrypt($text, $key) . "]";
-            echo "<br>";
-            echo "<b>Decryption</b>: [" . simpleCipherDecrypt($text, $key) . "]";
-            upload($text, "Simple Substitution", $key);
+            echo $text;
         }else{
             echo "This file is not allowed";
         }
