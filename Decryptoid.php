@@ -1,6 +1,6 @@
 <?php
-//startUp();
 require_once 'login.php';
+startUp();
 $conn = new mysqli($hn, $un, $pw, $db);
 if($conn->connect_error) die("Unable To Login"); //maybe change this to have a function instead
 
@@ -23,7 +23,7 @@ $cipherPage = <<<HTML
         </form>
         </body>
         </html>
-        HTML;
+HTML;
 
 echo $cipherPage;
 if(isset($_POST["btSignOut"])){
@@ -48,16 +48,17 @@ function cipherView($cipher){
 
 function startUp(){
     session_start();
-    if((sanitizeMySQL($_SESSION['ip']) != sanitizeMySQL($_SERVER['REMOTE_ADDR'])) || !isset($_SESSION['username'])){
+    /*if((sanitizeMySQL($_SESSION['ip']) != sanitizeMySQL($_SERVER['REMOTE_ADDR'])) || !isset($_SESSION['username'])){
         signOut();
-    }
-    $username = sanitizeMySQL($_SESSION['username']);  //this will be entered in the database once the user inputs text to decrypt or encrypt
-
+    }*/
+    $username = $_SESSION["username"];  //this will be entered in the database once the user inputs text to decrypt or encrypt
+	echo "Welcome $username.";
 }    
 function signOut(){
- //   session_unset();    //clear session information
- //   header("Location: login.php");   //whatever login file name
-    echo "Logged Out";
+    $_SESSION = array();
+    setcookie(session_name(), '', time() - 2592000, '/');
+    session_destroy();
+    header("Location: users.php");
 }
 function clean_strings($dirtyString){
     $cleanString = stripslashes($dirtyString);
@@ -72,5 +73,4 @@ function sanitizeMySQL($conn, $var){
     $var = clean_strings($var);
     return $var;
 }
-
 ?>

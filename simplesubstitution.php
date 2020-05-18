@@ -29,7 +29,7 @@ $cipherSimSub = <<<HTML
         </form>
         </body>
         </html>
-        HTML;
+HTML;
 echo $cipherSimSub;
 if(isset($_POST["btSignOut"])){
     signOut();
@@ -39,7 +39,10 @@ if(isset($_POST["btHome"])){
 }
 if(isset($_POST["btText"])){
     if(isset($_POST["key"]) && isset($_POST["textIn"])){
-        
+		$text = $conn->real_escape_string($_POST["textIn"]);
+		$key = $conn->real_escape_string($_POST["key"]);
+        echo simpleCipherCrypt($text, $key) . "<br>";
+        echo simpleCipherDecrypt($text, $key);
     }else{
         echo "No Key or Text Present";
     }
@@ -55,6 +58,36 @@ if(isset($_POST["btFile"])){
     }else{
         echo "No Key or File Present";
     }
+}
+
+function simpleCipherCrypt($text, $key) {
+	$alphabet_ref = "abcdefghijklmnopqrstuvwxyz";
+	$encrypted = "";
+	$text = strtolower($text);
+	for($i=0; $i<strlen($text); $i++) {
+		if(strpos($alphabet_ref, $text[$i]) === FALSE) {
+			$encrypted .= $text[$i];
+			continue;
+		}
+		$placeholder = strpos($alphabet_ref, $text[$i]);
+		$encrypted .= $key[$placeholder];
+	}
+	return $encrypted;
+}
+
+function simpleCipherDecrypt($text, $key) {
+	$alphabet_ref = "abcdefghijklmnopqrstuvwxyz";
+	$decrypted = "";
+	$text = strtolower($text);
+	for($i=0; $i<strlen($text); $i++) {
+		if(strpos($alphabet_ref, $text[$i]) === FALSE) {
+			$decrypted .= $text[$i];
+			continue;
+		}
+		$placeholder = strpos($key, $text[$i]);
+		$decrypted .= $alphabet_ref[$placeholder];
+	}
+	return $decrypted;
 }
 
 ?>

@@ -20,7 +20,7 @@ function userInput() {
 		<input type="submit" name = "SignUp" value="Sign Up">
 		</form>
 _END;
-
+	
     if(isset($_POST["name"]) && isset($_POST["pass"]) && !empty($_POST["name"]) && !empty($_POST["pass"])) {
 		$conn = new mysqli($hn, $un, $pw, $db);
 		if($conn->connect_error) die("OOPS");
@@ -41,8 +41,7 @@ _END;
 			$_SESSION["email"] = $token[1];
 			$_SESSION["password"] = $password;
 			$_SESSION["hashed"] = $temp;
-			echo $_SESSION["username"] . "<br>" . $_SESSION["email"] . "<br>" . $_SESSION["password"] . "<br>" . $_SESSION["hashed"]; 
-			//redirect here
+			header("Location: Decryptoid.php");
 		}
 		$result->close();
 		mysqli_close($conn);
