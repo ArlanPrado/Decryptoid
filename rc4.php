@@ -1,10 +1,6 @@
 <?php
 require_once 'Decryptoid.php';
-//startUp();
-require_once 'login.php';
-$conn = new mysqli($hn, $un, $pw, $db);
-if($conn->connect_error) die("Unable To Login"); //maybe change this to have a function instead
- 
+
 $cipherRC4 = <<<HTML
         <html><head><title>RC4</title></head>
         <body>
