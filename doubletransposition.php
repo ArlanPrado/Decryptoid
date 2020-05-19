@@ -55,9 +55,11 @@ if(isset($_POST["btText"]) || isset($_POST["btTextDec"])){
         echo "<br>";
         if(isset($_POST["btTextDec"])) {
 			echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
+                        uploadT($conn, $t, "Double Transposition", $k1, $k2, "Decryption");
 		}
 		else {
 			echo "<b>Encryption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
+                        uploadT($conn, $t, "Double Transposition", $k1, $k2, "Encryption");
 		}
     }else{
         echo "No Keys or Text Present";
@@ -76,9 +78,11 @@ if(isset($_POST["btFile"]) || isset($_POST["btFileDec"])){
 			echo "<br>";
 			if(isset($_POST["btFileDec"])) {
 				echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
+                                uploadT($conn, $t, "Double Transposition", $k1, $k2, "Decryption");
 			}
 			else {
 				echo "<b>Encryption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
+                                uploadT($conn, $t, "Double Transposition", $k1, $k2, "Encryption");
 			}
         }
     }
@@ -86,7 +90,7 @@ if(isset($_POST["btFile"]) || isset($_POST["btFileDec"])){
 		echo "No Keys or Text Present";
 	}
 }
-
+$conn->close();
 function dTEncrypt($text, $key1, $key2, $alphabet){
     $text1 = tEncrypt($text, $key1, $alphabet);
     $text2 = tEncrypt($text1, $key2, $alphabet);
@@ -176,4 +180,17 @@ function orderKey($alphabet, $key1) {
     return $key1Arr;
 }
 
+function uploadT($conn, $text, $cipher, $key1, $key2, $encOrdec){
+    //all parameters 
+    $date = new DateTime();
+    $username = $_SESSION["username"];
+    //$date = $date->getTimestamp();
+    
+    $query = "INSERT INTO Decryptoid.user_ciphers VALUES('$username', '$text', '$cipher', '$encOrdec', '$key1', '$key2')";
+    $result = $conn->query($query);
+    if(!$result) die("<br></br>Database access failed");
+    $result->close();
+    
+    //$stmt->execute();
+}
 ?>

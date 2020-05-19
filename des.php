@@ -67,6 +67,9 @@ if(isset($_POST["btFile"])){
         echo "No Key or File Present";
     }
 }
+
+$conn->close();
+
 function des($text, $key){
     
 }

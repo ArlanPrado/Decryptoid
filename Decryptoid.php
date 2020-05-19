@@ -3,7 +3,9 @@ require_once 'login.php';
 startUp();
 $conn = new mysqli($hn, $un, $pw, $db);
 if($conn->connect_error) die("Unable To Login"); //maybe change this to have a function instead
-
+//$stmt = $conn->prepare('INSERT INTO user_ciphers VALUES(?,?,?,?,?,?)');
+//if(!$stmt) die("Database access failed");
+//$stmt->bind_param('sssiss',$username, $text, $cipher, $encOrdec, $date, $key);
 
 $cipherPage = <<<HTML
         <html><head><title>Cipher4U</title></head>
@@ -84,14 +86,18 @@ function fileIO($conn) {
         }
     return $text;
 }
-
-function upload($text, $cipher, $key){
-    $result = $conn->query("SELECT * FROM user_ciphers");
-        
-    if(!$result) die("Cannot connect to database");
+//input text, cipher used, key used, $encryption or decryption
+function upload($conn, $text, $cipher, $key, $encOrdec){
+    //all parameters 
     $date = new DateTime();
     $username = $_SESSION["username"];
-    $query = "INSERT INTO user_ciphers VALUES($username, $text, $cipher, $date->getTimestamp(), $key)";    //username, text, cipher, timestamp->do not put?, key
+    //$date = $date->getTimestamp();
+    
+    $query = "INSERT INTO Decryptoid.user_ciphers VALUES('$username', '$text', '$cipher', '$encOrdec', '$key')";
     $result = $conn->query($query);
+    if(!$result) die("<br></br>Database access failed");
+    $result->close();
+    
+    //$stmt->execute();
 }
 ?>

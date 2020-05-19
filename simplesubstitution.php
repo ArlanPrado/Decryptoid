@@ -1,9 +1,9 @@
 <?php
 require_once 'Decryptoid.php';
 //startUp();
-require_once 'login.php';
-$conn = new mysqli($hn, $un, $pw, $db);
-if($conn->connect_error) die("Unable To Login"); //maybe change this to have a function instead
+//require_once 'login.php';
+//$conn = new mysqli($hn, $un, $pw, $db);
+//if($conn->connect_error) die("Unable To Login"); //maybe change this to have a function instead
 
 $cipherSimSub = <<<HTML
         <html><head><title>Simple Substitution</title></head>
@@ -49,9 +49,11 @@ if(isset($_POST["btText"]) || isset($_POST["btTextDec"])){
         echo "<br>";
         if(isset($_POST["btTextDec"])) {
 				echo "<b>Decryption</b>: [" . simpleCipherDecrypt($t, $k1) . "]";
+                                upload($conn, $t, "Simple Substitution", $k1, "Decryption");
 			}
 			else {
 				echo "<b>Encryption</b>: [" . simpleCipherCrypt($t, $k1) . "]";
+                                upload($conn, $t, "Simple Substitution", $k1, "Encryption");
 			}
     }else{
         echo "No Keys or Text Present";
@@ -69,9 +71,11 @@ if(isset($_POST["btFile"]) || isset($_POST["btFileDec"])){
 			echo "<br>";
 			if(isset($_POST["btFileDec"])) {
 				echo "<b>Decryption</b>: [" . simpleCipherDecrypt($t, $k1) . "]";
+                                upload($conn, $t, "Simple Substitution", $k1, "Decryption");
 			}
 			else {
 				echo "<b>Encryption</b>: [" . simpleCipherCrypt($t, $k1) . "]";
+                                upload($conn, $t, "Simple Substitution", $k1, "Encryption");
 			}
         }
     }
@@ -79,7 +83,7 @@ if(isset($_POST["btFile"]) || isset($_POST["btFileDec"])){
 		echo "No Keys or Text Present";
 	}
 }
-
+$conn->close();
 function simpleCipherCrypt($text, $key) {
 	$alphabet_ref = "abcdefghijklmnopqrstuvwxyz";
 	$encrypted = "";

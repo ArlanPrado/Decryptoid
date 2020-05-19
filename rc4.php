@@ -62,7 +62,7 @@ if(isset($_POST["btFile"])){
             echo "<b>Original Text</b>: [" . $text . "]";
             echo "<br>";
             echo "<b>Encryption/Decryption</b>: [" . rc4($text, $k1) . "]";
-            upload($text, "RC4", $k1);
+            upload($conn, $text, "RC4", $k1, "Encrypt&Decrypt");
         }else{
             echo "This file is not allowed";
         }
@@ -70,7 +70,7 @@ if(isset($_POST["btFile"])){
         echo "No Key or File Present";
     }
 }
-
+$conn->close();
 function rc4($text, $key){
     $rc4 = array(); //initialize 256 byte array
     $keyArr = array();
