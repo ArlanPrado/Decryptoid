@@ -23,7 +23,7 @@ $cipherDES = <<<HTML
         </form>
         </body>
         </html>
-        HTML;
+HTML;
 echo $cipherDES;
 
 
@@ -68,13 +68,21 @@ $conn->close();
 
 function des($text, $key){
     $bits = strlen($text) * 8;
-    $blocks = $bits / 64;
+    $blocks = ceil($bits / 64);
     
     //get 8 characters and separate into array
     $blocked = array();
     for($i = 0; $i < $blocks; $i++){
         $blocked[$i] = substr($text, $i * 8, 8);
+        if((($i * 8) + 8) > strlen($text)) {
+			$blocked[$i] = substr($text, $i * 8);
+			$buffer = 8 - strlen($blocked[$i]);
+			for($j=0; $j<$buffer; $j++) {
+				$blocked[$i] .= "0";
+			}
+		}
     }
+    
     echo var_dump($blocked);
     
     //foreach
