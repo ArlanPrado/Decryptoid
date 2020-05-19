@@ -1,4 +1,5 @@
 <?php
+//@author Arlan Prado and Joshua Sjah
 require_once 'login.php';
 startUp();
 $conn = new mysqli($hn, $un, $pw, $db);

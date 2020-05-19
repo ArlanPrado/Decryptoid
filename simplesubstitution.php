@@ -50,7 +50,7 @@ if(isset($_POST["btText"]) || isset($_POST["btTextDec"])){
 			else {
 				echo "<b>Encryption</b>: [" . simpleCipherCrypt($t, $k1) . "]";
                                 upload($conn, $t, "Simple Substitution", $k1, "", "Encryption");
-			}
+                        }       
     }else{
         echo "No Keys or Text Present";
     }
@@ -79,6 +79,7 @@ if(isset($_POST["btFile"]) || isset($_POST["btFileDec"])){
 		echo "No Keys or Text Present";
 	}
 }
+
 $conn->close();
 function simpleCipherCrypt($text, $key) {
 	$alphabet_ref = "abcdefghijklmnopqrstuvwxyz";
