@@ -1,5 +1,4 @@
 <?php
-//@author Arlan Prado and Joshua Sjah
 require_once 'login.php';
 startUp();
 $conn = new mysqli($hn, $un, $pw, $db);
@@ -74,6 +73,18 @@ function sanitizeMySQL($conn, $var){
     $var = clean_strings($var);
     return $var;
 }
+
+//function that takes a file, sanitizes it, and then returns the text 
+function fileIO($conn) {
+	$text = "";
+	if($_FILES["fileIn"]["type"] == "text/plain") {
+            $text = sanitizeMySQL($conn, file_get_contents($_FILES["fileIn"]["tmp_name"]));
+        }else{
+            echo "This file is not allowed";
+        }
+    return $text;
+}
+
 function upload($text, $cipher, $key){
     $result = $conn->query("SELECT * FROM user_ciphers");
         

@@ -44,8 +44,8 @@ if(isset($_POST["btSignOut"])){
 if(isset($_POST["btHome"])){
     header("Location:Decryptoid.php");
 }
-if(isset($_POST["btText"])){
-    if(isset($_POST["key1"]) && isset($_POST["key2"]) && isset($_POST["textIn"])){
+if(isset($_POST["btText"]) || isset($_POST["btTextDec"])){
+    if(!empty($_POST["key1"]) && !empty($_POST["key2"]) && isset($_POST["textIn"])){
         $k1 = strtoupper(sanitizeMySQL($conn, $_POST["key1"]));
         $k2 = strtoupper(sanitizeMySQL($conn, $_POST["key2"]));
         $t = sanitizeMySQL($conn, $_POST["textIn"]);
@@ -53,51 +53,38 @@ if(isset($_POST["btText"])){
         echo "<br>";
         echo "<b>Original Text</b>: [" . $t . "]";
         echo "<br>";
-        echo "<b>Encryption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
+        if(isset($_POST["btTextDec"])) {
+			echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
+		}
+		else {
+			echo "<b>Encryption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
+		}
     }else{
         echo "No Keys or Text Present";
     }
 }
 
-if(isset($_POST["btTextDec"])){
-    if(isset($_POST["key1"]) && isset($_POST["key2"]) && isset($_POST["textIn"])){
-        $k1 = strtoupper(sanitizeMySQL($conn, $_POST["key1"]));
+if(isset($_POST["btFile"]) || isset($_POST["btFileDec"])){
+    if(!empty($_POST["key1"]) && !empty($_POST["key2"]) && $_FILES["fileIn"]["size"] > 0){               
+		$t = fileIO($conn);
+		$k1 = strtoupper(sanitizeMySQL($conn, $_POST["key1"]));
         $k2 = strtoupper(sanitizeMySQL($conn, $_POST["key2"]));
-        $t = sanitizeMySQL($conn, $_POST["textIn"]);
-        echo "<b>Key 1</b>: " . $k1 . "<b> Key 2</b>: " . $k2;
-        echo "<br>";
-        echo "<b>Original Text</b>: [" . $t . "]";
-        echo "<br>";
-        echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
-    }else{
-        echo "No Keys or Text Present";
-    }
-}
-
-if(isset($_POST["btFile"])){
-    if(isset($_POST["key1"]) && isset($_POST["key2"])  && $_FILES["fileIn"]["size"] > 0){               
-	if($_FILES["fileIn"]["type"] == "text/plain") {
-            $text = sanitizeMySQL($conn, file_get_contents($conn, $_FILES["fileIn"]["tmp_name"]));
-            echo $text;
-        }else{
-            echo "This file is not allowed";
+		if($t != "") {
+			echo "<b>Key 1</b>: " . $k1 . "<b> Key 2</b>: " . $k2;
+			echo "<br>";
+			echo "<b>Original Text</b>: [" . $t . "]";
+			echo "<br>";
+			if(isset($_POST["btFileDec"])) {
+				echo "<b>Decryption</b>: [" . dtDecrypt($t, $k1, $k2, $alphabet) . "]";
+			}
+			else {
+				echo "<b>Encryption</b>: [" . dtEncrypt($t, $k1, $k2, $alphabet) . "]";
+			}
         }
-    }else{
-        echo "No Keys or File Present";
     }
-}
-
-if(isset($_POST["btFileDec"])){
-    if(isset($_POST["key1"]) && isset($_POST["key2"])  && $_FILES["fileIn"]["size"] > 0){               
-	if($_FILES["fileIn"]["type"] == "text/plain") {
-            $text = sanitizeMySQL($conn, file_get_contents($conn, $_FILES["fileIn"]["tmp_name"]));
-            echo $text;
-        }else{
-            echo "This file is not allowed";
-        }
-    }else{
-        echo "No Keys or File Present";
-    }
+    else{
+		echo "No Keys or Text Present";
+	}
 }
 
 function dTEncrypt($text, $key1, $key2, $alphabet){

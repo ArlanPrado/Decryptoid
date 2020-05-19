@@ -18,12 +18,14 @@ $cipherSimSub = <<<HTML
         
         <label for="textIn">Text Input:</label>
         <input type="text" id="textIn" name="textIn">
-        <input type="submit" value="Submit" name="btText">
+        <input type="submit" value="Encryption" name="btText">
+        <input type="submit" value="Decryption" name="btTextDec">
         <br></br>
         
         <label for="fileIn">File Input:</label>
         <input type="file" id="fileIn" name="fileIn">
-        <input type="submit" value="Upload" name="btFile">
+        <input type="submit" value="Encryption" name="btFile">
+        <input type="submit" value="Decryption" name="btFileDec">
         <br></br>
              
         </form>
@@ -37,41 +39,45 @@ if(isset($_POST["btSignOut"])){
 if(isset($_POST["btHome"])){
     header("Location:Decryptoid.php");
 }
-if(isset($_POST["btText"])){
-    if(isset($_POST["key"]) && isset($_POST["textIn"])){
-	$text = sanitizeMySQL($conn,$_POST["textIn"]);
-	$key = sanitizeMySQL($conn,$_POST["key"]);
-        echo "<b>Key</b>: " . $key . " ";
+if(isset($_POST["btText"]) || isset($_POST["btTextDec"])){
+    if(!empty($_POST["key"]) && isset($_POST["textIn"])){
+        $k1 = sanitizeMySQL($conn, $_POST["key"]);
+        $t = sanitizeMySQL($conn, $_POST["textIn"]);
+        echo "<b>Key 1</b>: " . $k1;
         echo "<br>";
-        echo "<b>Original Text</b>: [" . $text . "]";
+        echo "<b>Original Text</b>: [" . $t . "]";
         echo "<br>";
-        echo "<b>Encryption</b>: [" . simpleCipherCrypt($text, $key) . "]";
-        echo "<br>";
-        echo "<b>Decryption</b>: [" . simpleCipherDecrypt($text, $key) . "]";
-        upload($text, "Simple Substitution", $key);
+        if(isset($_POST["btTextDec"])) {
+				echo "<b>Decryption</b>: [" . simpleCipherDecrypt($t, $k1) . "]";
+			}
+			else {
+				echo "<b>Encryption</b>: [" . simpleCipherCrypt($t, $k1) . "]";
+			}
     }else{
-        echo "No Key or Text Present";
+        echo "No Keys or Text Present";
     }
 }
-if(isset($_POST["btFile"])){
-    if(isset($_POST["key"]) && $_FILES["fileIn"]["size"] > 0){               
-	if($_FILES["fileIn"]["type"] == "text/plain") {
-            $text = sanitizeMySQL($conn, file_get_contents($_FILES["fileIn"]["tmp_name"]));
-            $key = sanitizeMySQL($conn, $_POST["key"]);
-            echo "<b>Key</b>: " . $key . " ";
-            echo "<br>";
-            echo "<b>Original Text</b>: [" . $text . "]";
-            echo "<br>";
-            echo "<b>Encryption</b>: [" . simpleCipherCrypt($text, $key) . "]";
-            echo "<br>";
-            echo "<b>Decryption</b>: [" . simpleCipherDecrypt($text, $key) . "]";
-            upload($text, "Simple Substitution", $key);
-        }else{
-            echo "This file is not allowed";
+
+if(isset($_POST["btFile"]) || isset($_POST["btFileDec"])){
+    if(!empty($_POST["key"]) && $_FILES["fileIn"]["size"] > 0){               
+		$t = fileIO($conn);
+		$k1 = sanitizeMySQL($conn, $_POST["key"]);
+		if($t != "") {
+			echo "<b>Key 1</b>: " . $k1;
+			echo "<br>";
+			echo "<b>Original Text</b>: [" . $t . "]";
+			echo "<br>";
+			if(isset($_POST["btFileDec"])) {
+				echo "<b>Decryption</b>: [" . simpleCipherDecrypt($t, $k1) . "]";
+			}
+			else {
+				echo "<b>Encryption</b>: [" . simpleCipherCrypt($t, $k1) . "]";
+			}
         }
-    }else{
-        echo "No Key or File Present";
     }
+    else{
+		echo "No Keys or Text Present";
+	}
 }
 
 function simpleCipherCrypt($text, $key) {

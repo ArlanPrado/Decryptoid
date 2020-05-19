@@ -35,6 +35,7 @@ _END;
 		$confirm = $conn->real_escape_string($_POST["confirm"]);
 		
 		//all the validations
+		if(preg_match('/[\'^£$%&*()}{@#~?><>,|=+]/', $username)) die("Username cannot contain special characters besides - and _"); //validate username
 		if(!filter_var($email, FILTER_VALIDATE_EMAIL)) die("Invalid Email"); //built in function that validates emails
 		$query = "SELECT * FROM user_info WHERE email = '$email'"; //use the database to find if the email is already taken
 		$result = $conn->query($query);
