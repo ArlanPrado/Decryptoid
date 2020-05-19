@@ -86,9 +86,15 @@ function des($text, $key){
     echo var_dump($blocked);
     
     //foreach
+    $output = "";
     foreach($blocked as $block){
         //initial permutation ~ scramble the block
-        //
+        //get left plain text
+        //get right plain text
+        //for loop to 16 with key
+        //final permutation, combine left and right plain text        
+        //$output .= ;  get string and add it to output
     }
+    return output;
 }
 ?>
