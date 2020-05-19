@@ -45,10 +45,10 @@ if(isset($_POST["btText"]) || isset($_POST["btTextDec"])){
         echo "<br>";
         if(isset($_POST["btTextDec"])) {
             echo "<b>Decryption</b>: [" . rc4Decrypt($t, $k1) . "]";
-            upload($conn, $t, "RC4", $k1, "Decryption");
+            upload($conn, $t, "RC4", $k1, "", "Decryption");
         }else{
             echo "<b>Encryption</b>: [" . rc4($t, $k1) . "]";
-            upload($conn, $t, "RC4", $k1, "Encryption");
+            upload($conn, $t, "RC4", $k1, "", "Encryption");
         }
         
     }else{
@@ -66,10 +66,10 @@ if(isset($_POST["btFile"]) || isset($_POST["btFileDec"]) ){
             echo "<br>";
             if(isset($_POST["btFileDec"])) {
                 echo "<b>Decryption</b>: [" . rc4Decrypt($text, $k1) . "]";
-                upload($conn, $text, "RC4", $k1, "Decryption");
+                upload($conn, $text, "RC4", $k1, "", "Decryption");
             }else{
                 echo "<b>Encryption</b>: [" . rc4($text, $k1) . "]";
-                upload($conn, $text, "RC4", $k1, "Encryption");
+                upload($conn, $text, "RC4", $k1, "", "Encryption");
             }
         }else{
             echo "This file is not allowed";

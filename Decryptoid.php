@@ -90,17 +90,15 @@ function fileIO($conn) {
     return $text;
 }
 //input text, cipher used, key used, $encryption or decryption
-function upload($conn, $text, $cipher, $key, $encOrdec){
+function upload($conn, $text, $cipher, $key, $key2, $encOrdec){
     //all parameters 
-    $date = new DateTime();
+    $date = date("Y-m-d H:i:s");
     $username = $_SESSION["username"];
-    //$date = $date->getTimestamp();
     
-    $query = "INSERT INTO Decryptoid.user_ciphers VALUES('$username', '$text', '$cipher', '$encOrdec', '$key')";
+    $query = "INSERT INTO user_ciphers VALUES('$username', '$text', '$cipher', '$encOrdec', '$key', '$key2', '$date')";
     $result = $conn->query($query);
     if(!$result) die("<br></br>Database access failed");
-    $result->close();
-    
+    //$result->close();
     //$stmt->execute();
 }
 

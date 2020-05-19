@@ -15,5 +15,19 @@ $query = "CREATE TABLE IF NOT EXISTS user_info(
 $result = $conn->query($query);
 if (!$result) die("OOPS");
 echo "tables created.";
+
+$query = "CREATE TABLE user_ciphers(
+    username VARCHAR(255) NOT NULL,
+    input TEXT NOT NULL,
+    cipher VARCHAR(64) NOT NULL,
+    eORd VARCHAR(32) NOT NULL,
+    key1 VARCHAR(128),
+    key2 VARCHAR(128),
+    timestamp TIMESTAMP NOT NULL
+)";
+$result = $conn->query($query);
+if (!$result) die("OOPS");
+echo "tables created.";
+
 mysqli_close($conn);
 ?>

@@ -45,11 +45,11 @@ if(isset($_POST["btText"]) || isset($_POST["btTextDec"])){
         echo "<br>";
         if(isset($_POST["btTextDec"])) {
 				echo "<b>Decryption</b>: [" . simpleCipherDecrypt($t, $k1) . "]";
-                                upload($conn, $t, "Simple Substitution", $k1, "Decryption");
+                                upload($conn, $t, "Simple Substitution", $k1, "", "Decryption");
 			}
 			else {
 				echo "<b>Encryption</b>: [" . simpleCipherCrypt($t, $k1) . "]";
-                                upload($conn, $t, "Simple Substitution", $k1, "Encryption");
+                                upload($conn, $t, "Simple Substitution", $k1, "", "Encryption");
 			}
     }else{
         echo "No Keys or Text Present";
@@ -67,11 +67,11 @@ if(isset($_POST["btFile"]) || isset($_POST["btFileDec"])){
 			echo "<br>";
 			if(isset($_POST["btFileDec"])) {
 				echo "<b>Decryption</b>: [" . simpleCipherDecrypt($t, $k1) . "]";
-                                upload($conn, $t, "Simple Substitution", $k1, "Decryption");
+                                upload($conn, $t, "Simple Substitution", $k1, "", "Decryption");
 			}
 			else {
 				echo "<b>Encryption</b>: [" . simpleCipherCrypt($t, $k1) . "]";
-                                upload($conn, $t, "Simple Substitution", $k1, "Encryption");
+                                upload($conn, $t, "Simple Substitution", $k1, "", "Encryption");
 			}
         }
     }
