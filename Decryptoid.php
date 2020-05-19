@@ -48,11 +48,14 @@ function cipherView($cipher){
     }
 }
 
+//do not destroy the sessions here as this page will be called multiple times across other pages so the user needs to stay signed in
 function startUp(){
     session_start();
-    /*if((sanitizeMySQL($_SESSION['ip']) != sanitizeMySQL($_SERVER['REMOTE_ADDR'])) || !isset($_SESSION['username'])){
-        signOut();
-    }*/
+    if ($_SESSION["check"] != hash('ripemd128', $_SERVER['REMOTE_ADDR'] .$_SERVER['HTTP_USER_AGENT'])) different_user();
+    if (!isset($_SESSION['initiated'])) {
+		session_regenerate_id();
+		$_SESSION['initiated'] = 1;
+	}
     $username = $_SESSION["username"];  //this will be entered in the database once the user inputs text to decrypt or encrypt
 	echo "Welcome $username.";
 }    
@@ -99,5 +102,16 @@ function upload($conn, $text, $cipher, $key, $encOrdec){
     $result->close();
     
     //$stmt->execute();
+}
+
+function different_user() {
+	echo<<<_END
+		<html><head><title>Notice</title></head><body>
+		<form method="post" action="users.php" enctype="multipart/form-data">
+		Please sign in again. 
+		<br>
+		<input type="submit" name = "Return" value="Return">
+		</form>
+_END;
 }
 ?>

@@ -5,8 +5,8 @@ function userInput() {
     session_start();
   
 	echo <<<_END
-		<html><head><title>Online Virus Checker</title></head><body>
-		<h4>Admin Login</h4>
+		<html><head><title>Online Encryption</title></head><body>
+		<h4>Login</h4>
 		<form method="post" enctype="multipart/form-data">
 		Username:
 		<input type="text" name="name">
@@ -40,7 +40,8 @@ _END;
 			$_SESSION["username"] = $username;
 			$_SESSION["email"] = $token[1];
 			$_SESSION["password"] = $password;
-			$_SESSION["hashed"] = $temp;
+			$_SESSION["check"] = hash('ripemd128', $_SERVER['REMOTE_ADDR'] .$_SERVER['HTTP_USER_AGENT']);
+			$_SESSION["initiated"] = 1;
 			header("Location: Decryptoid.php");
 		}
 		$result->close();
