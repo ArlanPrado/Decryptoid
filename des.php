@@ -67,6 +67,20 @@ if(isset($_POST["btFile"])){
 $conn->close();
 
 function des($text, $key){
+    $bits = strlen($text) * 8;
+    $blocks = $bits / 64;
     
+    //get 8 characters and separate into array
+    $blocked = array();
+    for($i = 0; $i < $blocks; $i++){
+        $blocked[$i] = substr($text, $i * 8, 8);
+    }
+    echo var_dump($blocked);
+    
+    //foreach
+    foreach($blocked as $block){
+        //initial permutation ~ scramble the block
+        //
+    }
 }
 ?>
