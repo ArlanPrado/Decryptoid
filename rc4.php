@@ -13,12 +13,14 @@ $cipherRC4 = <<<HTML
         
         <label for="textIn">Text Input:</label>
         <input type="text" id="textIn" name="textIn">
-        <input type="submit" value="Submit" name="btText">
+        <input type="submit" value="Encryption" name="btText">
+        <input type="submit" value="Decryption" name="btTextDec">
         <br></br>
         
         <label for="fileIn">File Input:</label>
         <input type="file" id="fileIn" name="fileIn">
-        <input type="submit" value="Submit" name="btFile">
+        <input type="submit" value="Encryption" name="btFile">
+        <input type="submit" value="Decryption" name="btFileDec">
         <br></br>
         </form>
         </body>
@@ -33,7 +35,7 @@ if(isset($_POST["btSignOut"])){
 if(isset($_POST["btHome"])){
     header("Location:Decryptoid.php");
 }
-if(isset($_POST["btText"])){
+if(isset($_POST["btText"]) || isset($_POST["btTextDec"])){
     if(isset($_POST["key"]) && isset($_POST["textIn"])){
         $k1 = sanitizeMySQL($conn, $_POST["key"]);
         $t = sanitizeMySQL($conn, $_POST["textIn"]);
@@ -41,14 +43,19 @@ if(isset($_POST["btText"])){
         echo "<br>";
         echo "<b>Original Text</b>: [" . $t . "]";
         echo "<br>";
-        echo "<b>Encryption/Decryption</b>: [" . rc4($t, $k1) . "]";
-        upload($t, "RC4", $k1);
+        if(isset($_POST["btTextDec"])) {
+            echo "<b>Decryption</b>: [" . rc4Decrypt($t, $k1) . "]";
+            upload($conn, $t, "RC4", $k1, "Decryption");
+        }else{
+            echo "<b>Encryption</b>: [" . rc4($t, $k1) . "]";
+            upload($conn, $t, "RC4", $k1, "Encryption");
+        }
         
     }else{
         echo "No Key or Text Present";
     }
 }
-if(isset($_POST["btFile"])){
+if(isset($_POST["btFile"]) || isset($_POST["btFileDec"]) ){
     if(isset($_POST["key"]) && $_FILES["fileIn"]["size"] > 0){               
 	if($_FILES["fileIn"]["type"] == "text/plain") {
             $k1 = sanitizeMySQL($conn, $_POST["key"]);
@@ -57,8 +64,13 @@ if(isset($_POST["btFile"])){
             echo "<br>";
             echo "<b>Original Text</b>: [" . $text . "]";
             echo "<br>";
-            echo "<b>Encryption/Decryption</b>: [" . rc4($text, $k1) . "]";
-            upload($conn, $text, "RC4", $k1, "Encrypt&Decrypt");
+            if(isset($_POST["btFileDec"])) {
+                echo "<b>Decryption</b>: [" . rc4Decrypt($text, $k1) . "]";
+                upload($conn, $text, "RC4", $k1, "Decryption");
+            }else{
+                echo "<b>Encryption</b>: [" . rc4($text, $k1) . "]";
+                upload($conn, $text, "RC4", $k1, "Encryption");
+            }
         }else{
             echo "This file is not allowed";
         }
@@ -69,7 +81,7 @@ if(isset($_POST["btFile"])){
 $conn->close();
 function rc4($text, $key){
     $rc4 = array(); //initialize 256 byte array
-    $keyArr = array();
+
     for($i = 0; $i < 256; $i++){
         $rc4[$i] = $i;
     }
@@ -89,8 +101,43 @@ function rc4($text, $key){
         $i = ($i + 1) % 256;
         $j =  ($j + $rc4[$i]) % 256;
         $rc4 = swap($rc4, $i, $j);
-        $output .= chr(ord($text[$k]) ^ ($rc4[($rc4[$i] + $rc4[$j]) % 256]));
+        $output .= (ord($text[$k]) ^ ($rc4[($rc4[$i] + $rc4[$j]) % 256])) . " ";
     }
+    return $output;
+}
+
+function rc4Decrypt($ascii, $key){
+
+    $textArr = explode(' ', $ascii, strlen($ascii));
+    $text = "";
+    foreach($textArr as $char){
+        $text .= chr($char);
+    }
+
+    $rc4 = array(); //initialize 256 byte array
+
+    for($i = 0; $i < 256; $i++){
+        $rc4[$i] = $i;
+    }
+
+    //KSA
+    $j = 0;
+    for($i = 0; $i < 256; $i++){
+        $j = ($j + $rc4[$i] + ord($key[$i % strlen($key)])) % 256;
+        $rc4 = swap($rc4, $i, $j);
+    }
+    
+    //PRGA
+    $i = $j = 0;
+
+    $output = "";
+    for($k = 0; $k < count($textArr); $k++){
+        $i = ($i + 1) % 256;
+        $j =  ($j + $rc4[$i]) % 256;
+        $rc4 = swap($rc4, $i, $j);
+        $output .= chr(ord($text[$k]) ^ ($rc4[($rc4[$i] + $rc4[$j]) % 256])) . " ";
+    }
+    //substr
     return $output;
 }
 function swap($rc4, $i, $j){
